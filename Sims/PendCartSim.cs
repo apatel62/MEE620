@@ -42,10 +42,22 @@ public class PendCartSim : Simulator
 
         // Evaluate right sides of differential equations of motion
         // ##### You will need to provide these ###### //
-        ff[0] = 0.0;   // time derivative of state xCart
-        ff[1] = 0.0;   // time derivative of state theta
-        ff[2] = 0.0;   // time derivative of state u1
-        ff[3] = 0.0;   // time derivative of state u2
+        double sinTh = Math.Sin(theta);
+        double cosTh = Math.Cos(theta);
+
+        double A = (mc+mp);
+        double B = mp*L*cosTh;
+        double C = mp*L*cosTh;
+        double D = mp*L*L;
+
+        double det = A*D - B*C;
+        double R1 = mp*L*u2*u2*sinTh;
+        double R2 = -mp*g*L*sinTh;
+
+        ff[0] = u1;   // time derivative of state xCart
+        ff[1] = u2;   // time derivative of state theta
+        ff[2] = (D*R1 - B*R2)/det;   // time derivative of state u1
+        ff[3] = (-C*R1+A*R2)/det;   // time derivative of state u2
     }
 
 
@@ -157,7 +169,9 @@ public class PendCartSim : Simulator
             double u2 = x[3];
 
             //########## YOU NEED TO CALCULATE THIS ###########
-            return 0.0; 
+            double v1Sq = u1*u1;
+            double v2Sq = u1*u1 + 2.0*u1*L*u2*Math.Cos(theta) + L*L*u2*u2;
+            return 0.5*(mc*v1Sq + mp*v2Sq); 
         }
     }
 
@@ -169,7 +183,7 @@ public class PendCartSim : Simulator
             double theta = x[1];
 
             //########## YOU NEED TO CALCULATE THIS ###########
-            return 0.0; 
+            return -mp*g*L*Math.Cos(theta); 
         }
     }
 
@@ -181,7 +195,7 @@ public class PendCartSim : Simulator
             double theta = x[1];
 
             //########## YOU NEED TO CALCULATE THIS ###########
-            return 0.0; 
+            return (mc*xCart + mp*(xCart+L*Math.Sin(theta)))/(mc+mp); 
         }
     }
 
@@ -193,7 +207,7 @@ public class PendCartSim : Simulator
             double theta = x[1];
 
             //########## YOU NEED TO CALCULATE THIS ###########
-            return 0.0; 
+            return (-mp*L*Math.Cos(theta))/(mc+mp); 
         }
     }
 }
